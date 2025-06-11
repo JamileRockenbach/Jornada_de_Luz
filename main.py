@@ -38,7 +38,7 @@ espinho = pygame.image.load("recursos/espinho (1).png")
 espinho = pygame.transform.scale(espinho, (150,200))
 fumaca = pygame.image.load("recursos/fumaça (1).png")
 fumaca = pygame.transform.scale(fumaca, (150,200))
-sol = pygame.image.load("recursos/soll.png")
+sol = pygame.image.load("recursos/sol5.png")
 sol = pygame.transform.scale(sol, (200,200))
 nuvem = pygame.image.load("recursos/nuvem3.png")
 nuvem = pygame.transform.scale(nuvem, (200,200))
@@ -49,10 +49,10 @@ posicaoY = 0
 movimento = 0
 posicao_orbeX = 100
 posicao_orbeY = -100
-velocidade_orbe = 1
+velocidade_orbe = 5
 posicao_fumacaX = 400
 posicao_fumacaY = -100
-velocidade_fumaca = 1
+velocidade_fumaca = 5
 posicao_espinhoX = 500
 posicao_espinhoY = 800
 velocidade_espinho = 1
@@ -110,7 +110,7 @@ def jogar():
         posicaoX += movimento
         posicaoX = max(-50, min(posicaoX, 850))
 
-        rect_persona = pygame.Rect(posicaoX, 450,200,300)
+        rect_persona = pygame.Rect(posicaoX + 50,470,150,250)
         rect_orbe = pygame.Rect(posicao_orbeX, posicao_orbeY, 120, 120)
         rect_fumaca = pygame.Rect(posicao_fumacaX, posicao_fumacaY, 120, 120)
         rect_espinho = pygame.Rect(posicao_espinhoX, posicao_espinhoY, 100,190)
@@ -120,22 +120,18 @@ def jogar():
             posicao_orbeY = -100
             pontos += 1
             som_orbe.play()
-            velocidade_orbe += 1
             posicao_orbeX = random.randint(0, 950)
         elif posicao_orbeY > 700:
             posicao_orbeY = -100
-            velocidade_orbe += 1
             posicao_orbeX = random.randint(0, 950)
 
         posicao_fumacaY += velocidade_fumaca
         if rect_persona.colliderect(rect_fumaca):
             posicao_fumacaY = -100
             pontos -= 1
-            velocidade_fumaca += 1
             posicao_fumacaX = random.randint(0, 950)
         elif posicao_fumacaY > 700:
             posicao_fumacaY = -100
-            velocidade_fumaca += 1
             posicao_fumacaX = random.randint(0, 950)
 
         posicao_espinhoY += velocidade_espinho * direcao_espinho
@@ -181,11 +177,10 @@ def jogar():
         tela.blit(orbe, (posicao_orbeX, posicao_orbeY))
         tela.blit(fumaca, (posicao_fumacaX, posicao_fumacaY))
         tela.blit(espinho, (posicao_espinhoX, posicao_espinhoY))
-
         texto = fonteMenu.render("Pontos: " + str(pontos), True, branco)
         tela.blit(texto, (20, 20))
 
         pygame.display.update()
         relogio.tick(60)
-
+        
 jogar()
