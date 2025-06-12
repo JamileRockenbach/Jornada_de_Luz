@@ -47,6 +47,11 @@ nuvem = pygame.transform.scale(nuvem, (200, 200))
 
 som_orbe = pygame.mixer.Sound("recursos/orbeSound.mp3")
 fonteMenu = pygame.font.SysFont("Bahnschrift", 25)
+pygame.mixer.music.load("recursos/musicaFundo.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.load("recursos/musicaFundo.mp3")
+pygame.mixer.music.play(-1)
+musicaFinal = "recursos/musicaFinal.mp3"
 
 posicaoX = 250
 movimento = 0
@@ -60,8 +65,6 @@ travado = False
 tempo_travado = 0
 pontos = 0
 virar_esquerda = False
-pygame.mixer.music.load("recursos/musicaFundo.mp3")
-pygame.mixer.music.play(-1)
 
 personagem_original = personagem
 personagem_atual = personagem_original
@@ -72,6 +75,107 @@ escala_maxima = 1.05
 velocidade_pulsacao = 0.002
 posicaoNuvemX, posicaoNuvemY = 10, -80
 posicaoSolX, posicaoSolY = 865, -50
+
+frases_morte = ['Você é mais forte do que pensa.',
+                'Mesmo na escuridão, a luz interior brilha.',
+                'Tentar novamente é um sinal de coragem.',
+                'As quedas ensinam a levantar com mais firmeza.',
+                'O importante é nunca desistir.',
+                'Você está evoluindo, mesmo quando não percebe.',
+                'Derrotas também fazem parte da jornada.',
+                'Grandes vitórias nascem de pequenos fracassos.',
+                'Tudo bem descansar, só não pare.',
+                'A luz que você busca está dentro de você.',
+                'Você tem potencial para superar qualquer desafio.',
+                'A jornada é feita de altos e baixos. Continue.',
+                'Não existe fracasso, apenas aprendizado.',
+                'Cada tentativa te aproxima do seu objetivo.',
+                'Recomeçar é sinal de força, não de fraqueza.',
+                'Coragem é seguir em frente apesar do medo.',
+                'Você já chegou longe. Continue.',
+                'Só erra quem tenta, continue em frente!',
+                'A luz volta a brilhar para quem não desiste.',
+                'Você não está sozinho nessa caminhada.',
+                'Acreditar em si é o primeiro passo.',
+                'A derrota é só um capítulo, não o final da história.',
+                'Grandes jornadas têm obstáculos. Supere-os.',
+                'Se cair, levante mais forte, você consegue.',
+                'Os dias difíceis também constroem heróis.',
+                'Você é a esperança que o mundo precisa.',
+                'Cada esforço vale a pena.',
+                'Você já venceu muitas vezes antes. Vai vencer de novo.',
+                'Toda escuridão passa e a luz volta!',
+                'Confie no processo.',
+                'Você faz a diferença.',
+                'Erros constroem sabedoria.',
+                'Nada é em vão quando se aprende.',
+                'A luz está logo ali. Continue caminhando.',
+                'Acredite: sua jornada inspira.',
+                'O hoje é só um passo do amanhã brilhante.',
+                'Desistir não combina com você.',
+                'Sua força está nos seus recomeços.',
+                'Nunca subestime sua capacidade de mudar.',
+                'Sempre há uma nova chance.',
+                'Cada fim traz um recomeço mais sábio.',
+                'Respire fundo e recomece com o coração leve.',
+                'Você está no caminho certo.',
+                'Não tenha medo de errar. Tenha coragem de continuar.',
+                'A escuridão só revela o brilho da sua luz.',
+                'Seu esforço tem valor, mesmo que ninguém veja.',
+                'A queda não te define, eu acredito em você!',
+                'Persista, mesmo quando tudo parecer difícil.',
+                'O brilho do amanhã começa com sua persistência hoje.']
+
+def voltar_ao_menu():
+        tela_morte.destroy()
+        menu()
+
+def tela_morte():
+    pygame.mixer.music.load("recursos/musicaFinal.mp3")
+    pygame.mixer.music.set_volume(0.8)
+    pygame.mixer.music.play(loops=-1)
+
+    botao_menu = pygame.Rect(80, 300, 280, 60)
+    botao_historico = pygame.Rect(80, 380, 280, 60)
+    botao_sair = pygame.Rect(80, 460, 280, 60)
+
+    fonte_titulo = pygame.font.SysFont("Bahnschrift", 60, bold=True)
+    fonte_botao = pygame.font.SysFont("Bahnschrift", 30, bold=True)
+    frase_escolhida = random.choice(frases_morte)
+
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if botao_menu.collidepoint(evento.pos):
+                    menu()
+                    return
+                elif botao_sair.collidepoint(evento.pos):
+                    pygame.quit()
+                    quit()
+                elif botao_historico.collidepoint(evento.pos):
+                    print("Histórico da partida ainda não implementado")
+
+        tela.blit(tela_final, (0, 0))
+        pygame.draw.rect(tela, (8, 11, 33), botao_menu, border_radius=10)
+        pygame.draw.rect(tela, (8, 11, 33), botao_historico, border_radius=10)
+        pygame.draw.rect(tela, (8, 11, 33), botao_sair, border_radius=10)
+
+        texto_menu = fonte_botao.render("Voltar ao Menu", True, (255, 255, 255))
+        texto_historico = fonte_botao.render("Histórico", True, (255, 255, 255))
+        texto_sair = fonte_botao.render("Sair", True, (255, 255, 255))
+
+        tela.blit(texto_menu, (botao_menu.x + 30, botao_menu.y + 15))
+        tela.blit(texto_historico, (botao_historico.x + 15, botao_historico.y + 15))
+        tela.blit(texto_sair, (botao_sair.x + 100, botao_sair.y + 15))
+        fonte_frase = pygame.font.SysFont("Bahnschrift", 28, bold=False)
+        texto_frase = fonte_frase.render(frase_escolhida, True, (255, 255, 255))
+        tela.blit(texto_frase, (400,100))
+
+        pygame.display.update()
+        relogio.tick(60)
 
 def jogar():
     global movimento, posicaoX, posicao_orbeX, posicao_orbeY
@@ -123,9 +227,8 @@ def jogar():
 
         posicao_fumacaY += velocidade_fumaca
         if rect_persona.colliderect(rect_fumaca):
-            posicao_fumacaY = -100
-            pontos -= 1
-            posicao_fumacaX = random.randint(0, 950)
+            tela_morte()
+            return
         elif posicao_fumacaY > 700:
             posicao_fumacaY = -100
             posicao_fumacaX = random.randint(0, 950)
@@ -180,7 +283,7 @@ def jogar():
         relogio.tick(60)
 
 def iniciar_jogo():
-    root.destroy()
+    root.withdraw()  
     jogar()
 
 def mostrar_tutorial():
@@ -202,7 +305,7 @@ def mostrar_tutorial():
 
 def mostrar_objetivo():
     objetivo_window = tk.Toplevel(root)
-    objetivo_window.title("Tutorial")
+    objetivo_window.title("Objetivos")
     objetivo_window.geometry("1000x700")
 
     imagem2 = Image.open("recursos/objetivo.png")
@@ -234,7 +337,7 @@ def menu():
     ctypes.windll.gdi32.AddFontResourceW(caminho_fonte)
     global root
     root = tk.Tk()
-    root.title("Bem-Vindos a Jornada de Luz!")
+    root.title("Bem-Vindos a Jornada de Luz")
 
     icone_ico_path = os.path.abspath("recursos/icone.png")
     
@@ -264,7 +367,7 @@ def menu():
     imagem_fundo = ImageTk.PhotoImage(imagem_redimensionada)
 
     label_fundo = tk.Label(root, image=imagem_fundo)
-    label_fundo.image = imagem_fundo  # para evitar garbage collection
+    label_fundo.image = imagem_fundo 
     label_fundo.place(x=0, y=0, relwidth=1, relheight=1)
 
     botao_jogar = tk.Button(root, text="Jogar", command=iniciar_jogo, width=20, height=1, bg="#080B21", fg="white", font=fonte_botoes)
@@ -286,3 +389,4 @@ def menu():
 
 if __name__ == "__main__":
     menu()
+
