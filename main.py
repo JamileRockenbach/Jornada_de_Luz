@@ -138,38 +138,35 @@ def tela_morte():
     pygame.mixer.music.set_volume(0.8)
     pygame.mixer.music.play(loops=-1)
 
-    botao_menu = pygame.Rect(80, 300, 280, 60)
-    botao_sair = pygame.Rect(80, 400, 280, 60)
-
     fonte_titulo = pygame.font.SysFont("Bahnschrift", 60, bold=True)
-    fonte_botao = pygame.font.SysFont("Bahnschrift", 30, bold=True)
+    fonte_instrucao = pygame.font.SysFont("Bahnschrift", 30, bold=True)
+    fonte_frase = pygame.font.SysFont("Impact", 35, bold=False)
     frase_escolhida = random.choice(frases_morte)
+    fonte_agradecimento = pygame.font.SysFont("Impact", 30, bold=False)
 
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            elif evento.type == pygame.MOUSEBUTTONDOWN:
-                if botao_menu.collidepoint(evento.pos):
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_w:
+                    root.destroy()
                     menu()
                     return
-                elif botao_sair.collidepoint(evento.pos):
+                elif evento.key == pygame.K_s:
                     pygame.quit()
                     quit()
 
         tela.blit(tela_final, (0, 0))
-        pygame.draw.rect(tela, (8, 11, 33), botao_menu, border_radius=10)
-        pygame.draw.rect(tela, (8, 11, 33), botao_sair, border_radius=10)
-
-        texto_menu = fonte_botao.render("Voltar ao Menu", True, (255, 255, 255))
-        texto_sair = fonte_botao.render("Sair", True, (255, 255, 255))
-
-        tela.blit(texto_menu, (botao_menu.x + 30, botao_menu.y + 15))
-        tela.blit(texto_sair, (botao_sair.x + 100, botao_sair.y + 15))
-        fonte_frase = pygame.font.SysFont("Impact", 35, bold=False)
         texto_frase = fonte_frase.render(frase_escolhida, True, (9, 15, 43))
-        tela.blit(texto_frase, (174,60))
+        tela.blit(texto_frase, (174, 60))
+        instrucao_w = fonte_instrucao.render("Aperte W para voltar ao menu", True, (9, 15, 43))
+        instrucao_s = fonte_instrucao.render("Aperte S para sair do jogo", True, (9, 15, 43))
+        tela.blit(instrucao_w, (50, 300))
+        tela.blit(instrucao_s, (50, 360))
+        agradecimento = fonte_agradecimento.render("Obrigada por jogar!", True, (9, 15, 43))
+        tela.blit(agradecimento, (tela.get_width() // 2 - agradecimento.get_width() // 2, tela.get_height() - 50))
 
         pygame.display.update()
         relogio.tick(60)
@@ -214,7 +211,7 @@ def jogar():
             icone_pausa = fonte_icone.render("⏸️⏸️", True, (200, 200, 200))
             tela.blit(icone_pausa, (tela.get_width() // 2 - icone_pausa.get_width() // 2, 250))
             fonte_instrucao = pygame.font.SysFont("Bahnschrift", 30)
-            texto_instrucao = fonte_instrucao.render("Clique 'space' para voltar à jornada", True, (180, 180, 180))
+            texto_instrucao = fonte_instrucao.render("Clique em 'espaço' para voltar à jornada", True, (180, 180, 180))
             tela.blit(texto_instrucao, (tela.get_width() // 2 - texto_instrucao.get_width() // 2, 400))
 
             pygame.display.update()
@@ -301,7 +298,6 @@ def jogar():
         pygame.display.update()
         relogio.tick(60)
 
-
 def iniciar_jogo():
     root.withdraw()  
     jogar()
@@ -310,6 +306,7 @@ def mostrar_tutorial():
     tutorial_window = tk.Toplevel(root)
     tutorial_window.title("Tutorial")
     tutorial_window.geometry("1000x700")
+    tutorial_window.iconbitmap("recursos/icone2.ico")
 
     imagem = Image.open("recursos/tutorial1.png")
     imagem_redimensionada = imagem.resize((1000, 700))
@@ -327,6 +324,7 @@ def mostrar_objetivo():
     objetivo_window = tk.Toplevel(root)
     objetivo_window.title("Objetivos")
     objetivo_window.geometry("1000x700")
+    objetivo_window.iconbitmap("recursos/icone2.ico")
 
     imagem2 = Image.open("recursos/objetivo.png")
     imagem_redimensionada2 = imagem2.resize((1000, 700))
@@ -356,10 +354,9 @@ def menu():
     caminho_fonte = os.path.abspath("fonte.ttf")
     ctypes.windll.gdi32.AddFontResourceW(caminho_fonte)
     global root
-    root = tk.Tk()
+    root = tk.Toplevel()
     root.title("Bem-Vindos a Jornada de Luz")
-
-    icone_ico_path = os.path.abspath("recursos/icone2.ico")
+    root.iconbitmap("recursos/icone2.ico")
     
     global fonte_botoes
     fonte_titulo = font.Font(family="Bahnschrift", size=60, weight="bold")
@@ -409,4 +406,3 @@ def menu():
 
 if __name__ == "__main__":
     menu()
-
