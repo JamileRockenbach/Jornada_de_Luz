@@ -7,6 +7,8 @@ import ctypes
 from recursos.basicos import limpar_tela, aguarde, inicializarBancoDeDados, escreverDados
 import json
 from PIL import Image, ImageTk
+from datetime import datetime
+from tkinter import simpledialog
 
 pygame.init()
 pygame.mixer.init()
@@ -337,9 +339,22 @@ def jogar():
         relogio.tick(60)
 
 def iniciar_jogo():
-    root.withdraw()
-    resetar_jogo()    
-    jogar()      
+    nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:", parent=root)
+    if nome_jogador:
+        root.withdraw()
+        resetar_jogo()
+        jogar()
+        salvar_historico(nome_jogador, pontos)  # Salva após jogar
+    else:
+        messagebox.showinfo("Aviso", "Nome obrigatório para jogar.")
+
+def salvar_historico(nome_jogador, pontos):
+    agora = datetime.now()
+    data_hora = agora.strftime("%d/%m/%Y %H:%M:%S")
+    linha = f"{nome_jogador} | Pontos: {pontos} | Data e Hora: {data_hora}\n"
+
+    with open("log.dat", "a", encoding="utf-8") as arquivo:
+        arquivo.write(linha)
 
 def mostrar_tutorial():
     tutorial_window = tk.Toplevel(root)
@@ -378,7 +393,24 @@ def mostrar_objetivo():
     botao_voltar.place(x= 380, y=500)
     
 def mostrar_historico():
-    messagebox.showinfo("Histórico", "Funcionalidade em desenvolvimento.")
+    historico_window = tk.Toplevel(root)
+    historico_window.title("Histórico de Jogadores")
+    historico_window.geometry("600x400")
+    historico_window.iconbitmap("recursos/icone2.ico")
+
+    try:
+        with open("log.dat", "r", encoding="utf-8") as arquivo:
+            conteudo = arquivo.read()
+    except FileNotFoundError:
+        conteudo = "Nenhum histórico encontrado ainda."
+
+    texto = tk.Text(historico_window, wrap="word", font=("Bahnschrift", 12))
+    texto.insert("1.0", conteudo)
+    texto.config(state="disabled")
+    texto.pack(expand=True, fill="both", padx=10, pady=10)
+    botao_voltar = tk.Button(historico_window, text="Fechar", command=historico_window.destroy,
+                             bg="#080B21", fg="white", font=fonte_botoes)
+    botao_voltar.pack(pady=10)
 
 def sair_jogo():
     root.destroy()
