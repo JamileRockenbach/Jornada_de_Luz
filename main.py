@@ -44,6 +44,8 @@ sol = pygame.image.load("recursos/sol5.png")
 sol = pygame.transform.scale(sol, (200, 200))
 nuvem = pygame.image.load("recursos/nuvem3.png")
 nuvem = pygame.transform.scale(nuvem, (200, 200))
+pause = pygame.image.load("recursos/pause.jpeg")
+pause = pygame.transform.scale(pause, (1000, 700))
 
 som_orbe = pygame.mixer.Sound("recursos/orbeSound.mp3")
 fonteMenu = pygame.font.SysFont("Bahnschrift", 25)
@@ -65,6 +67,7 @@ travado = False
 tempo_travado = 0
 pontos = 0
 virar_esquerda = False
+pausado = False
 
 personagem_original = personagem
 personagem_atual = personagem_original
@@ -136,8 +139,7 @@ def tela_morte():
     pygame.mixer.music.play(loops=-1)
 
     botao_menu = pygame.Rect(80, 300, 280, 60)
-    botao_historico = pygame.Rect(80, 380, 280, 60)
-    botao_sair = pygame.Rect(80, 460, 280, 60)
+    botao_sair = pygame.Rect(80, 400, 280, 60)
 
     fonte_titulo = pygame.font.SysFont("Bahnschrift", 60, bold=True)
     fonte_botao = pygame.font.SysFont("Bahnschrift", 30, bold=True)
@@ -155,24 +157,19 @@ def tela_morte():
                 elif botao_sair.collidepoint(evento.pos):
                     pygame.quit()
                     quit()
-                elif botao_historico.collidepoint(evento.pos):
-                    print("Histórico da partida ainda não implementado")
 
         tela.blit(tela_final, (0, 0))
         pygame.draw.rect(tela, (8, 11, 33), botao_menu, border_radius=10)
-        pygame.draw.rect(tela, (8, 11, 33), botao_historico, border_radius=10)
         pygame.draw.rect(tela, (8, 11, 33), botao_sair, border_radius=10)
 
         texto_menu = fonte_botao.render("Voltar ao Menu", True, (255, 255, 255))
-        texto_historico = fonte_botao.render("Histórico", True, (255, 255, 255))
         texto_sair = fonte_botao.render("Sair", True, (255, 255, 255))
 
         tela.blit(texto_menu, (botao_menu.x + 30, botao_menu.y + 15))
-        tela.blit(texto_historico, (botao_historico.x + 15, botao_historico.y + 15))
         tela.blit(texto_sair, (botao_sair.x + 100, botao_sair.y + 15))
-        fonte_frase = pygame.font.SysFont("Bahnschrift", 28, bold=False)
-        texto_frase = fonte_frase.render(frase_escolhida, True, (255, 255, 255))
-        tela.blit(texto_frase, (400,100))
+        fonte_frase = pygame.font.SysFont("Impact", 35, bold=False)
+        texto_frase = fonte_frase.render(frase_escolhida, True, (9, 15, 43))
+        tela.blit(texto_frase, (174,60))
 
         pygame.display.update()
         relogio.tick(60)
@@ -183,26 +180,46 @@ def jogar():
     global velocidade_orbe, velocidade_fumaca, direcao_espinho
     global pontos, travado, tempo_travado, personagem_atual
     global virar_esquerda, posicaoNuvemX, escala_sol, direcao_escala
+    global pausado
 
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            elif evento.type == pygame.KEYDOWN and not travado:
-                if evento.key == pygame.K_LEFT:
-                    movimento = -5
-                    if not virar_esquerda:
-                        personagem_atual = pygame.transform.flip(personagem_original, True, False)
-                        virar_esquerda = True
-                elif evento.key == pygame.K_RIGHT:
-                    movimento = 5
-                    if virar_esquerda:
-                        personagem_atual = personagem_original
-                        virar_esquerda = False
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    pausado = not pausado
+                if not pausado and not travado:
+                    if evento.key == pygame.K_LEFT:
+                        movimento = -5
+                        if not virar_esquerda:
+                            personagem_atual = pygame.transform.flip(personagem_original, True, False)
+                            virar_esquerda = True
+                    elif evento.key == pygame.K_RIGHT:
+                        movimento = 5
+                        if virar_esquerda:
+                            personagem_atual = personagem_original
+                            virar_esquerda = False
             elif evento.type == pygame.KEYUP:
                 if evento.key in [pygame.K_LEFT, pygame.K_RIGHT] and not travado:
                     movimento = 0
+
+        if pausado:
+            tela.blit(pause, (0,0))
+            fonte_titulo = pygame.font.SysFont("Bahnschrift", 60, bold=True)
+            texto_titulo = fonte_titulo.render("JOGO PAUSADO", True, (255, 255, 255))
+            tela.blit(texto_titulo, (tela.get_width() // 2 - texto_titulo.get_width() // 2, 150))
+            fonte_icone = pygame.font.SysFont("Arial", 100)
+            icone_pausa = fonte_icone.render("⏸️⏸️", True, (200, 200, 200))
+            tela.blit(icone_pausa, (tela.get_width() // 2 - icone_pausa.get_width() // 2, 250))
+            fonte_instrucao = pygame.font.SysFont("Bahnschrift", 30)
+            texto_instrucao = fonte_instrucao.render("Clique 'space' para voltar à jornada", True, (180, 180, 180))
+            tela.blit(texto_instrucao, (tela.get_width() // 2 - texto_instrucao.get_width() // 2, 400))
+
+            pygame.display.update()
+            relogio.tick(60)
+            continue
 
         if travado:
             movimento = 0
@@ -277,10 +294,13 @@ def jogar():
         tela.blit(fumaca, (posicao_fumacaX, posicao_fumacaY))
         tela.blit(espinho, (posicao_espinhoX, posicao_espinhoY))
         texto = fonteMenu.render("Pontos: " + str(pontos), True, branco)
+        mensagemPause = fonteMenu.render("Press space to Pause Game", True, branco)
         tela.blit(texto, (20, 20))
+        tela.blit(mensagemPause, (20, 45))
 
         pygame.display.update()
         relogio.tick(60)
+
 
 def iniciar_jogo():
     root.withdraw()  
@@ -339,7 +359,7 @@ def menu():
     root = tk.Tk()
     root.title("Bem-Vindos a Jornada de Luz")
 
-    icone_ico_path = os.path.abspath("recursos/icone.png")
+    icone_ico_path = os.path.abspath("recursos/icone2.ico")
     
     global fonte_botoes
     fonte_titulo = font.Font(family="Bahnschrift", size=60, weight="bold")
