@@ -129,9 +129,45 @@ frases_morte = ['Você é mais forte do que pensa.',
                 'Persista, mesmo quando tudo parecer difícil.',
                 'O brilho do amanhã começa com sua persistência hoje.']
 
+def resetar_jogo():
+    global movimento, posicaoX, posicao_orbeX, posicao_orbeY
+    global posicao_fumacaX, posicao_fumacaY, posicao_espinhoX, posicao_espinhoY
+    global velocidade_orbe, velocidade_fumaca, direcao_espinho
+    global pontos, travado, tempo_travado, personagem_atual
+    global virar_esquerda, posicaoNuvemX, escala_sol, direcao_escala
+    global pausado
+
+    movimento = 0
+    posicaoX = 450
+
+    posicao_orbeX = random.randint(0, 950)
+    posicao_orbeY = -100
+
+    posicao_fumacaX = random.randint(0, 950)
+    posicao_fumacaY = -100
+
+    posicao_espinhoX = random.randint(0, 850)
+    posicao_espinhoY = 750
+    direcao_espinho = -1
+
+    velocidade_orbe = 5
+    velocidade_fumaca = 7
+
+    pontos = 0
+    travado = False
+    tempo_travado = 0
+    personagem_atual = personagem_original
+    virar_esquerda = False
+    pausado = False
+
+    posicaoNuvemX = -100
+    escala_sol = 1.0
+    direcao_escala = 1
+
 def voltar_ao_menu():
         tela_morte.destroy()
         menu()
+        return
 
 def tela_morte():
     pygame.mixer.music.load("recursos/musicaFinal.mp3")
@@ -151,9 +187,11 @@ def tela_morte():
                 quit()
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_w:
-                    root.destroy()
+                    try:
+                        root.destroy()
+                    except:
+                        pass
                     menu()
-                    return
                 elif evento.key == pygame.K_s:
                     pygame.quit()
                     quit()
@@ -299,8 +337,9 @@ def jogar():
         relogio.tick(60)
 
 def iniciar_jogo():
-    root.withdraw()  
-    jogar()
+    root.withdraw()
+    resetar_jogo()    
+    jogar()      
 
 def mostrar_tutorial():
     tutorial_window = tk.Toplevel(root)
@@ -354,7 +393,7 @@ def menu():
     caminho_fonte = os.path.abspath("fonte.ttf")
     ctypes.windll.gdi32.AddFontResourceW(caminho_fonte)
     global root
-    root = tk.Toplevel()
+    root = tk.Tk()
     root.title("Bem-Vindos a Jornada de Luz")
     root.iconbitmap("recursos/icone2.ico")
     
