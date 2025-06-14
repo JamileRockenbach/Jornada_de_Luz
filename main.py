@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import messagebox, font
 import ctypes
 from recursos.basicos import limpar_tela, aguarde, inicializarBancoDeDados, escreverDados
+from recursos.basicos import pedir_nome
 import json
 from PIL import Image, ImageTk
 from datetime import datetime
@@ -70,7 +71,6 @@ tempo_travado = 0
 pontos = 0
 virar_esquerda = False
 pausado = False
-
 personagem_original = personagem
 personagem_atual = personagem_original
 escala_sol = 1.0
@@ -80,6 +80,8 @@ escala_maxima = 1.05
 velocidade_pulsacao = 0.002
 posicaoNuvemX, posicaoNuvemY = 10, -80
 posicaoSolX, posicaoSolY = 865, -50
+nome_jogador = ""
+
 
 frases_morte = ['Você é mais forte do que pensa.',
                 'Mesmo na escuridão, a luz interior brilha.',
@@ -218,6 +220,7 @@ def jogar():
     global pontos, travado, tempo_travado, personagem_atual
     global virar_esquerda, posicaoNuvemX, escala_sol, direcao_escala
     global pausado
+    global nome_jogador
 
     while True:
         for evento in pygame.event.get():
@@ -281,6 +284,7 @@ def jogar():
 
         posicao_fumacaY += velocidade_fumaca
         if rect_persona.colliderect(rect_fumaca):
+            salvar_historico(nome_jogador, pontos)
             tela_morte()
             return
         elif posicao_fumacaY > 700:
@@ -339,22 +343,14 @@ def jogar():
         relogio.tick(60)
 
 def iniciar_jogo():
+    global nome_jogador 
     nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:", parent=root)
     if nome_jogador:
         root.withdraw()
         resetar_jogo()
         jogar()
-        salvar_historico(nome_jogador, pontos)  # Salva após jogar
     else:
         messagebox.showinfo("Aviso", "Nome obrigatório para jogar.")
-
-def salvar_historico(nome_jogador, pontos):
-    agora = datetime.now()
-    data_hora = agora.strftime("%d/%m/%Y %H:%M:%S")
-    linha = f"{nome_jogador} | Pontos: {pontos} | Data e Hora: {data_hora}\n"
-
-    with open("log.dat", "a", encoding="utf-8") as arquivo:
-        arquivo.write(linha)
 
 def mostrar_tutorial():
     tutorial_window = tk.Toplevel(root)
@@ -474,6 +470,14 @@ def menu():
     botao_sair.place(x=500, y=550)
 
     root.mainloop()
+
+def salvar_historico(nome_jogador, pontos):
+    agora = datetime.now()
+    data_hora = agora.strftime("%d/%m/%Y %H:%M:%S")
+    linha = f"{nome_jogador} | Pontos: {pontos} | Data e Hora: {data_hora}\n"
+
+    with open("log.dat", "a", encoding="utf-8") as arquivo:
+        arquivo.write(linha)
 
 if __name__ == "__main__":
     menu()

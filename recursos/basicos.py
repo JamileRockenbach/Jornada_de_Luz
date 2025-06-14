@@ -1,12 +1,17 @@
 import os, time
 import json
 from datetime import datetime
+from tkinter import simpledialog
 
 def limpar_tela():
     os.system("cls")
     
 def aguarde(segundos):
     time.sleep(segundos)
+
+def pedir_nome():
+    global nome_jogador
+    nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:")
     
 def inicializarBancoDeDados():
     try:
