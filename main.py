@@ -1,15 +1,17 @@
+import os
+import json
 import pygame
 import random
-import os
-import tkinter as tk
-from tkinter import messagebox, font
 import ctypes
-from recursos.basicos import limpar_tela, aguarde, inicializarBancoDeDados, escreverDados
-from recursos.basicos import pedir_nome
-import json
-from PIL import Image, ImageTk
+import pyttsx3
+import tkinter as tk
+import speech_recognition as sr
 from datetime import datetime
+from PIL import Image, ImageTk
 from tkinter import simpledialog
+from tkinter import messagebox, font
+from recursos.basicos import pedir_nome, ouvir, falar
+from recursos.basicos import limpar_tela, aguarde, inicializarBancoDeDados, escreverDados
 
 pygame.init()
 pygame.mixer.init()
@@ -20,10 +22,8 @@ tela = pygame.display.set_mode(tamanho)
 pygame.display.set_caption("A Jornada de Luz")
 icone = pygame.image.load("recursos/icone.png")
 pygame.display.set_icon(icone)
-
 branco = (255, 255, 255)
 preto = (0, 0, 0)
-amarelo = (197, 162, 124)
 
 tela_inicial = pygame.image.load("recursos/telaInicial.png")
 tela_inicial = pygame.transform.scale(tela_inicial, (1000, 700))
@@ -57,6 +57,8 @@ pygame.mixer.music.play(-1)
 pygame.mixer.music.load("recursos/musicaFundo.mp3")
 pygame.mixer.music.play(-1)
 musicaFinal = "recursos/musicaFinal.mp3"
+reconhecedor = sr.Recognizer()
+engine = pyttsx3.init()
 
 posicaoX = 250
 movimento = 0
@@ -81,8 +83,6 @@ velocidade_pulsacao = 0.002
 posicaoNuvemX, posicaoNuvemY = 10, -80
 posicaoSolX, posicaoSolY = 865, -50
 nome_jogador = ""
-
-
 frases_morte = ['Você é mais forte do que pensa.',
                 'Mesmo na escuridão, a luz interior brilha.',
                 'Tentar novamente é um sinal de coragem.',
@@ -214,6 +214,9 @@ def tela_morte():
         relogio.tick(60)
 
 def jogar():
+    pygame.mixer.music.load("recursos/musicaFundo.mp3")
+    pygame.mixer.music.set_volume(0.8)
+    pygame.mixer.music.play(loops=-1)
     global movimento, posicaoX, posicao_orbeX, posicao_orbeY
     global posicao_fumacaX, posicao_fumacaY, posicao_espinhoX, posicao_espinhoY
     global velocidade_orbe, velocidade_fumaca, direcao_espinho
@@ -308,7 +311,6 @@ def jogar():
                 direcao_espinho = -1
                 posicao_espinhoY = 750
                 posicao_espinhoX = random.randint(0, 850)
-
         if travado and agora - tempo_travado >= 3000:
             travado = False
 
@@ -343,8 +345,19 @@ def jogar():
         relogio.tick(60)
 
 def iniciar_jogo():
-    global nome_jogador 
-    nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:", parent=root)
+    global nome_jogador
+    escolha = messagebox.askyesno("Entrada de Nome", "Deseja falar o nome em vez de digitar?")
+
+    if escolha:
+        pygame.mixer.music.stop()
+        nome_voz = ouvir()
+        if nome_voz:
+            nome_jogador = nome_voz
+        else:
+            nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:", parent=root)
+    else:
+        nome_jogador = simpledialog.askstring("Nome do Jogador", "Digite seu nome:", parent=root)
+
     if nome_jogador:
         root.withdraw()
         resetar_jogo()
@@ -357,7 +370,6 @@ def mostrar_tutorial():
     tutorial_window.title("Tutorial")
     tutorial_window.geometry("1000x700")
     tutorial_window.iconbitmap("recursos/icone2.ico")
-
     imagem = Image.open("recursos/tutorial1.png")
     imagem_redimensionada = imagem.resize((1000, 700))
     imagem_tk = ImageTk.PhotoImage(imagem_redimensionada)
