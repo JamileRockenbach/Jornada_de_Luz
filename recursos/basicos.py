@@ -36,7 +36,7 @@ def ouvir():
         try:
             audio = reconhecedor.listen(source, timeout=5, phrase_time_limit=5)
             nome = reconhecedor.recognize_google(audio, language="pt-BR")
-            print("Você disse:", nome)
+            print("Bem-Vindo(a):", nome)
             return nome
         except sr.UnknownValueError:
             print("Não entendi o que foi dito.")
