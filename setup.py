@@ -1,6 +1,6 @@
 import cx_Freeze
 executaveis = [ 
-               cx_Freeze.Executable(script="main.py", icon="recursos/icone.ico") ]
+               cx_Freeze.Executable(script="main.py", icon="recursos/icone2.ico") ]
 cx_Freeze.setup(
     name = "A Jornada de Luz",
     options={
