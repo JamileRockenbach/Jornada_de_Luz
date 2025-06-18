@@ -36,6 +36,5 @@
 ### Testadora do Jogo 
 **Maria Luiza Pereto** **RA: 1138637**
 
----
 
 ![Game A Jornada de Luz](recursos/gameplay.jpeg)
