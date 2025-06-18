@@ -26,4 +26,9 @@
 *Random* - Randomizar os espinhos no jogo e nas frases no final.
 ---
 
+### Jogo Testado Por:
+**Maria Luiza Pereto** **RA: 1138637**
+
+---
+
 ![Game A Jornada de Luz](recursos/gameplay.jpeg)
