@@ -34,7 +34,7 @@ Mais do que um jogo de aventura, A Jornada de Luz foi criado com a intenção de
 ---
 
 ### Testador do jogo:
-Maria Luiza Pereto RA: 1138637
+Maria Luiza Pereto RA:1138637
 
 ---
 
